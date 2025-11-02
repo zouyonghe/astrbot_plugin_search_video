@@ -75,11 +75,7 @@ class VideoAPI():
             return None
 
         # 合并视频和音频
-        try:
-            await self._merge_file_to_mp4(video_file, audio_file, output_file)
-        except Exception as merge_err:
-            logger.warning(f"合并视频音频失败，回退为仅视频：{merge_err}")
-            shutil.copy(video_file, output_file)
+        await self._merge_file_to_mp4(video_file, audio_file, output_file)
 
         # 删除临时文件
         for f in [video_file, audio_file]:
@@ -149,20 +145,30 @@ class VideoAPI():
         # 构建 ffmpeg 命令
         command = f'ffmpeg -y -i "{v_full_file_name}" -i "{a_full_file_name}" -c copy "{output_file_name}"'
         stdout = None if log_output else subprocess.DEVNULL
-        stderr = None if log_output else subprocess.DEVNULL
+        stderr = None if log_output else subprocess.PIPE
 
         if platform.system() == "Windows":
             # Windows 下使用 run_in_executor
             loop = asyncio.get_event_loop()
-            await loop.run_in_executor(
+            process = await loop.run_in_executor(
                 None,
-                lambda: subprocess.call(command, shell=True, stdout=stdout, stderr=stderr),  # noqa: ASYNC221
+                lambda: subprocess.run(command, shell=True, stdout=stdout, stderr=stderr),  # noqa: ASYNC221
             )
+            stderr_output = process.stderr.decode().strip() if process.stderr else ""
         else:
             # 其他平台使用 create_subprocess_shell
             process = await asyncio.create_subprocess_shell(
                 command, shell=True, stdout=stdout, stderr=stderr
             )
-            await process.communicate()
+            _, stderr_output = await process.communicate()
+            stderr_output = stderr_output.decode().strip() if stderr_output else ""
 
-
+        if process.returncode != 0:
+            logger.error(f"合并失败，FFmpeg 返回码：{process.returncode}")
+            if stderr_output:
+                logger.error(f"FFmpeg 错误输出：{stderr_output}")
+            # 回退为仅发送视频文件
+            shutil.copy(v_full_file_name, output_file_name)
+            logger.warning(f"合并视频音频失败，回退为仅视频：{output_file_name}")
+        else:
+            logger.info(f"合并完成：{output_file_name}")

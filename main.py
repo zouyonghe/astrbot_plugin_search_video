@@ -3,11 +3,12 @@ from bs4 import BeautifulSoup
 from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.star import Context, Star, StarTools, register
 from astrbot.core.config.astrbot_config import AstrBotConfig
-from astrbot.core.message.components import  Image, Video
+from astrbot.core.message.components import Image, Video
 from astrbot.core.utils.session_waiter import SessionController, session_waiter
 from astrbot import logger
 from .draw import VideoCardRenderer
 from .api import VideoAPI
+
 
 @register(
     "astrbot_plugin_search_video",
@@ -36,7 +37,6 @@ class VideoPlugin(Star):
         # 视频缓存路径
         self.plugin_data_dir = StarTools.get_data_dir("astrbot_plugin_search_video")
 
-
     @filter.command("搜视频")
     async def search_video_handle(self, event: AstrMessageEvent):
         """搜索视频"""
@@ -45,9 +45,7 @@ class VideoPlugin(Star):
         video_name = event.message_str.replace("搜视频", "")
 
         # 获取搜索结果
-        video_list = await self.api.search_video(
-            keyword=video_name, page=1
-        )
+        video_list = await self.api.search_video(keyword=video_name, page=1)
         if not video_list:
             yield event.plain_result("没有找到相关视频")
             return
@@ -59,11 +57,16 @@ class VideoPlugin(Star):
         )
         await event.send(event.chain_result([Image.fromBytes(image)]))
 
+        umo = event.unified_msg_origin
+        sender_id = event.get_sender_id()
+
         # 等待用户选择视频
-        @session_waiter(timeout=self.timeout) # type: ignore
+        @session_waiter(timeout=self.timeout)  # type: ignore
         async def empty_mention_waiter(
             controller: SessionController, event: AstrMessageEvent
         ):
+            if umo != event.unified_msg_origin or sender_id != event.get_sender_id():
+                return
             input = event.message_str
 
             # 翻页机制
@@ -103,7 +106,11 @@ class VideoPlugin(Star):
             duration = self.convert_duration_to_seconds(duration_str)
             if duration > self.max_duration:
                 video_url = f"https://www.bilibili.com/video/{video_id}"
-                await event.send(event.plain_result(f"视频超过{self.max_duration/60}分钟改用链接：{video_url}"))
+                await event.send(
+                    event.plain_result(
+                        f"视频超过{self.max_duration / 60}分钟改用链接：{video_url}"
+                    )
+                )
             else:
                 await event.send(event.plain_result(f"正在下载 {title}..."))
                 logger.info(f"正在下载视频:{raw_title}")
