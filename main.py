@@ -96,7 +96,7 @@ class VideoPlugin(Star):
             video = videos[-1][int(input) - 1]
             video_id: str = video.get("bvid", "")
             raw_title = video["title"]
-            title = BeautifulSoup(raw_title, "html.parser").get_text()[0:9]
+            title = BeautifulSoup(raw_title, "html.parser").get_text()
             duration_str: str = video.get("duration", "0")
 
             # 视频时长是否超过最大时长时发链接，否则发送视频
@@ -109,8 +109,8 @@ class VideoPlugin(Star):
                     )
                 )
             else:
-                await event.send(event.plain_result(f"正在下载: {raw_title}"))
-                logger.info(f"正在下载视频:{raw_title}")
+                await event.send(event.plain_result(f"正在下载: {title}"))
+                logger.info(f"正在下载视频:{title}")
                 data_path = await self.api.download_video(
                     video_id, str(self.plugin_data_dir)
                 )

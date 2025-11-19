@@ -3,7 +3,6 @@
 
 ![:name](https://count.getloli.com/@astrbot_plugin_search_video?name=astrbot_plugin_search_video&theme=minecraft&padding=6&offset=0&align=top&scale=1&pixelated=1&darkmode=auto)
 
-
 # astrbot_plugin_search_video
 
 _✨ [astrbot](https://github.com/AstrBotDevs/AstrBot) 搜视频插件 ✨_  
@@ -20,17 +19,20 @@ _✨ [astrbot](https://github.com/AstrBotDevs/AstrBot) 搜视频插件 ✨_
 搜索视频并下载，让你和群友直接在群内一起刷视频
 
 ## 📦 安装
-- 安装ffmpeg：本插件依赖于ffmpeg合并视频和音频，一般安装napcat时会自动帮你安装好，其他协议端请自行安装
 
-- 安装本插件：直接在astrbot的插件市场搜索astrbot_plugin_search_video，点击安装，等待完成即可。如果安装失败还可以直接克隆源码到插件文件夹：
+- 安装ffmpeg：本插件依赖于ffmpeg合并视频和音频。
 
 ```bash
-# 克隆仓库到插件目录
-cd /AstrBot/data/plugins
-git clone https://github.com/Zhalslar/astrbot_plugin_search_video
+# Linux（Ubuntu / Debian）系统安装ffmpeg示例：
+# 打开终端输入下面的命令
+sudo apt update
+sudo apt install ffmpeg
 
-# 控制台重启AstrBot
+# 其他系统自己上网查
 ```
+
+- 安装本插件：直接在astrbot的插件市场搜索astrbot_plugin_search_video，点击安装，等待完成即可
+
 
 ## ⚙️ 配置
 
@@ -50,13 +52,13 @@ git clone https://github.com/Zhalslar/astrbot_plugin_search_video
 ## ⌨️ 使用说明
 
 指令表
+
 |     命令      |      说明       |
 |:-------------:|:-----------------------------:|
 | /搜视频 关键词     | 根据关键词搜索视频，然后发送序号“1” “2”等进行选择，发“页2” “页3”等进行翻页  |
 
 示例图
 ![download](https://github.com/user-attachments/assets/8d2fe20d-bf74-4411-b96c-0ab8da2a5910)
-
 
 ## 👥 贡献指南
 
