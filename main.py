@@ -53,6 +53,9 @@ class VideoPlugin(Star):
             cards_per_row=self.cards_per_row,
         )
         await event.send(event.chain_result([Image.fromBytes(image)]))
+        await event.send(
+            event.plain_result(f"请在{self.timeout}秒内回复序号")
+        )
 
         umo = event.unified_msg_origin
         sender_id = event.get_sender_id()
@@ -120,7 +123,8 @@ class VideoPlugin(Star):
         try:
             await empty_mention_waiter(event)  # type: ignore
         except TimeoutError as _:
-            yield event.plain_result("操作超时！")
+            # 超时直接忽略，不再推送提示
+            pass
         except Exception as e:
             logger.error("搜索视频发生错误" + str(e))
         finally:
