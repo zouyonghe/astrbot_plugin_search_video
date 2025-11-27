@@ -33,6 +33,8 @@ class VideoPlugin(Star):
         self.timeout: int = config.get("timeout", 60)
         # 是否保存视频
         self.is_save: bool = config.get("is_save", True)
+        # 是否提示“正在下载”
+        self.show_download_prompt: bool = config.get("show_download_prompt", True)
         # 视频缓存路径
         self.plugin_data_dir = StarTools.get_data_dir("astrbot_plugin_search_video")
 
@@ -132,7 +134,8 @@ class VideoPlugin(Star):
                     )
                 )
             else:
-                await event.send(event.plain_result(f"正在下载: {title}"))
+                if self.show_download_prompt:
+                    await event.send(event.plain_result(f"正在下载: {title}"))
                 logger.info(f"正在下载视频:{title}")
                 data_path = await self.api.download_video(
                     video_id, str(self.plugin_data_dir)

@@ -15,6 +15,12 @@
         "type": "bool",
         "hint": "保存路径为data/plugins_data/astrbot_plugin_search_video"
     },
+    "show_download_prompt": {
+        "description": "是否提示正在下载",
+        "type": "bool",
+        "default": true,
+        "hint": "开启后在下载前发送“正在下载”提示"
+    },
     "cards_per_row": {
         "description": "候选菜单的列数",
         "type": "int",
