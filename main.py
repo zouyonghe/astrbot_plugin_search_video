@@ -108,7 +108,7 @@ class VideoPlugin(Star):
                 controller.fallback_to_llm(
                     self.context.get_event_queue(),
                     event,
-                    stop_session=False,
+                    stop_session=True,
                 )
                 return
 
