@@ -1,7 +1,5 @@
 import os
 
-import copy
-
 from bs4 import BeautifulSoup
 
 from astrbot import logger
@@ -107,12 +105,11 @@ class VideoPlugin(Star):
                 or int(normalized_input) < 1
                 or int(normalized_input) > len(videos[-1])
             ):
-                # 非序号输入，转交给默认 LLM 处理
-                new_event = copy.copy(event)
-                new_event.clear_result()
-                self.context.get_event_queue().put_nowait(new_event)
-                event.stop_event()
-                controller.stop()
+                controller.fallback_to_llm(
+                    self.context.get_event_queue(),
+                    event,
+                    stop_session=False,
+                )
                 return
 
             # 先停止会话，防止下载视频时出现“再次输入”
